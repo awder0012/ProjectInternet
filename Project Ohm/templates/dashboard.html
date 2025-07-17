@@ -1,0 +1,191 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Room Internet Monitor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #ffffff;
+            padding: 16px;ถ
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        header h1 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 16px;
+        }
+        .search-box {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .search-box input {
+            padding: 10px;
+            width: 220px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .table-responsive {
+            overflow-x: auto;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+        th {
+            background: #f9f9f9;
+            font-weight: 500;
+            color: #555;
+        }
+        tr:hover {
+            background: #f1f1f1;
+        }
+        .status-dot {
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .online-dot { background-color: #4caf50; }
+        .offline-dot { background-color: #f44336; }
+        a {
+            color: #d32f2f;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        form {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        form h2 {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 180px;
+            background: #fafafa;
+        }
+        button {
+            padding: 10px 20px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        button:hover {
+            background: #43a047;
+        }
+        @media (max-width: 480px) {
+            form {
+                flex-direction: column;
+                align-items: center;
+            }
+            input[type="text"] {
+                width: 90%;
+            }
+            button {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Room Internet Monitor</h1>
+</header>
+
+<div class="container">
+
+    <form method="post" action="/add">
+        <h2>เพิ่มห้องใหม่</h2>
+        <input type="text" name="room" placeholder="Room Name" required>
+        <input type="text" name="ip" placeholder="IP Address" required>
+        <input type="text" name="gateway" placeholder="Gateway" required>
+        <button type="submit">➕ เพิ่ม</button>
+    </form>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="ค้นหาเลขห้อง...">
+    </div>
+
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Room</th>
+                    <th>IP Address</th>
+                    <th>Gateway</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for room, info in statuses.items() %}
+                <tr>
+                    <td>{{ room }}</td>
+                    <td>{{ info.ip }}</td>
+                    <td>{{ info.gateway }}</td>
+                    <td><span class="status-dot {% if info.status == 'online' %}online-dot{% else %}offline-dot{% endif %}"></span></td>
+                    <td><a href="/delete/{{ room }}">ลบ</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const query = this.value.toLowerCase();
+        const rows = document.querySelectorAll('table tbody tr');
+
+        rows.forEach(row => {
+            const room = row.querySelector('td')?.textContent.toLowerCase();
+            row.style.display = room.includes(query) ? '' : 'none';
+        });
+    });
+</script>
+
+</body>
+</html>
